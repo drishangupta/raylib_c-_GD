@@ -97,6 +97,7 @@ class Game{
     void Update()
     {
         snake.Update();
+        CheckCollisionWithFood();
     }
 
     void CheckCollisionWithFood()
