@@ -98,6 +98,14 @@ class Game{
     {
         snake.Update();
     }
+
+    void CheckCollisionWithFood()
+    {
+        if(Vector2Equals(snake.body[0],food.position))
+        {
+            std::cout<<"eating fooood";
+        }
+    }
 };
 
 int main() 
