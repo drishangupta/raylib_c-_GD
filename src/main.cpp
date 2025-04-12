@@ -8,6 +8,7 @@ Color darkg = {43,51,24,255};
 
 int cellSize=30;
 int cellCount=25; 
+int offset = 75;
 
 double lastUpdateTime=0;
 bool ElementInDeque(Vector2 element, std::deque<Vector2> deque)
@@ -47,7 +48,7 @@ class Snake
             {
                 float x=body[i].x;
                 float y=body[i].y;
-                Rectangle segment = Rectangle{x*cellSize, y*cellSize, (float)cellSize, (float)cellSize};
+                Rectangle segment = Rectangle{offset+ x*cellSize,offset+ y*cellSize, (float)cellSize, (float)cellSize};
                 DrawRectangleRounded(segment,0.5,6,darkg);
 
             }
@@ -67,6 +68,11 @@ class Snake
             
         }
     }
+        void Reset()
+        {
+            body = {Vector2{6,9},Vector2{5,9},Vector2{4,9}};
+            direction ={1,0};
+        }
 
 };
 
@@ -93,7 +99,7 @@ public:
 
     void Draw()
     {
-        DrawTexture(texture,position.x*cellSize,position.y*cellSize,WHITE);
+        DrawTexture(texture,offset + position.x*cellSize,offset+ position.y*cellSize,WHITE);
     }
 
     Vector2 GenerateRandomCellForFood()
@@ -119,17 +125,22 @@ class Game{
     public:
     Snake snake = Snake();
     Food food = Food(snake.body);
-
+    bool running = true;
+    int score = 0;
     void Draw()
     {
         food.Draw();
         snake.Draw();
     }
     void Update()
-    {
+    {   
+        if(running)
+        {
         snake.Update();
         CheckCollisionWithFood();
         CheckCollisionWithEdges();
+        CheckCollisionWithTail();
+    }
     }
 
     void CheckCollisionWithFood()
@@ -138,12 +149,15 @@ class Game{
         {
             food.position=food.GenerateRandomPos(snake.body);
             snake.addSegment = true;
+            score++;
         }
     }
-    void GameOver(Vector2 pos)
+    void GameOver()
     {
-        
-        std::cout<<"game over";
+        snake.Reset();
+        food.position = food.GenerateRandomPos(snake.body);
+        running = false;
+        score = 0;
     }
     void CheckCollisionWithEdges()
     {
@@ -153,11 +167,20 @@ class Game{
         else if (snake.body[0].x < 0)
             snake.body[0].x = cellCount - 1;
 
-    // Wrap vertically
+        // Wrap vertically
         if (snake.body[0].y >= cellCount)
             snake.body[0].y = 0;
         else if (snake.body[0].y < 0)
             snake.body[0].y = cellCount - 1;
+    }
+    void CheckCollisionWithTail()
+    {
+        std::deque<Vector2> headlessbody = snake.body;
+        headlessbody.pop_front();
+        if(ElementInDeque(snake.body[0],headlessbody))
+        {
+            GameOver();
+        }
     }
     
 };
@@ -165,7 +188,7 @@ class Game{
 int main() 
 {
     
-    InitWindow(cellSize*cellCount,cellSize*cellCount, "Retro Snake");
+    InitWindow(2*offset + cellSize*cellCount,2*offset+cellSize*cellCount, "Retro Snake");
     SetTargetFPS(60);
 
     Game game = Game();
@@ -176,7 +199,7 @@ int main()
         //1. Event
         BeginDrawing();
         
-        if (eventTriggered(0.4))
+        if (eventTriggered(0.1))
         {
             game.Update();
         }
@@ -184,18 +207,22 @@ int main()
         if(IsKeyPressed(KEY_UP) && game.snake.direction.y != 1)
         {
             game.snake.direction = {0,-1};
+            game.running=true;
         }
         if(IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1)
         {
             game.snake.direction = {0,1};
+            game.running=true;
         }
         if(IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1)
         {
             game.snake.direction = {-1,0};
+            game.running=true;
         }
         if(IsKeyPressed(KEY_RIGHT) && game.snake.direction.x !=-1)
         {
             game.snake.direction = {1,0};
+            game.running=true;
         }
 
 
@@ -203,6 +230,9 @@ int main()
         
         //3. Draw
         ClearBackground(background);
+        DrawRectangleLinesEx(Rectangle{(float)offset-5,(float)offset-5,(float)cellSize*cellCount+10,(float)cellSize*cellCount+10},5,darkg);
+        DrawText("Retro Snake",offset-5,20,40,darkg);
+        DrawText(TextFormat("Score: %i",game.score),offset-5,offset+cellSize*cellCount+10,40,darkg);
         game.Draw();
         EndDrawing();
     }
