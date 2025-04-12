@@ -10,6 +10,17 @@ int cellSize=30;
 int cellCount=25; 
 
 double lastUpdateTime=0;
+bool ElementInDeque(Vector2 element, std::deque<Vector2> deque)
+{
+    for (unsigned int i=0;i<deque.size();i++)
+    {
+        if (Vector2Equals(deque[i],element))
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
 bool eventTriggered(double interval)
 {
@@ -54,14 +65,14 @@ class Food
 public:
     Vector2 position;
     Texture2D texture;
-    Food()
+    Food(std::deque<Vector2> snakeBody)
     {
         Image image = LoadImage("Graphics/chuha.png");
         Image *ptr = &image;
         ImageResize(ptr,cellSize,cellSize);
         texture = LoadTextureFromImage(image);
         UnloadImage(image);
-        position = GenerateRandomPos();
+        position = GenerateRandomPos(snakeBody);
 
     }
 
@@ -75,11 +86,21 @@ public:
         DrawTexture(texture,position.x*cellSize,position.y*cellSize,WHITE);
     }
 
-    Vector2 GenerateRandomPos()
+    Vector2 GenerateRandomCellForFood()
     {
         float x = GetRandomValue(0,cellCount-1);
         float y = GetRandomValue(0,cellCount-1);
-        return Vector2{x,y};
+        return {x,y};
+    }
+    Vector2 GenerateRandomPos(std::deque<Vector2> snakeBody)
+    {
+        
+        Vector2 position = GenerateRandomCellForFood();
+        while (ElementInDeque(position, snakeBody))
+        {
+        GenerateRandomCellForFood();
+        }
+        return position;
     }
 
 };
@@ -87,7 +108,7 @@ public:
 class Game{
     public:
     Snake snake = Snake();
-    Food food = Food();
+    Food food = Food(snake.body);
 
     void Draw()
     {
@@ -104,7 +125,7 @@ class Game{
     {
         if(Vector2Equals(snake.body[0],food.position))
         {
-            std::cout<<"eating fooood";
+            food.position=food.GenerateRandomPos(snake.body);
         }
     }
 };
