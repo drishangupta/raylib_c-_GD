@@ -1,10 +1,12 @@
 #include <raylib.h>
+Color background = {173,204,96,255};
+Color snake = {43,51,24,255};
 int main() 
 {
     int ballX=400;
     int ballY=400;
-    Color green = {20,160,133,255};
-    InitWindow(800,800, "My First Raylib Game");
+    
+    InitWindow(750,750, "Retro Snake");
     SetTargetFPS(60);
     //game loop
     while(WindowShouldClose() == false)
@@ -28,7 +30,7 @@ int main()
         
         //3. Draw
         BeginDrawing();
-        ClearBackground(green);
+        ClearBackground(background);
         DrawCircle(ballX,ballY,20, WHITE);
         EndDrawing();
     }
