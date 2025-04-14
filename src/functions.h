@@ -9,7 +9,7 @@ Color darkg = {43,51,24,255};
 int cellSize=30;
 int cellCount=25; 
 int offset = 75;
-
+double gameSpeed = 0.2;
 double lastUpdateTime=0;
 bool ElementInDeque(Vector2 element, std::deque<Vector2> deque)
 {

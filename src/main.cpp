@@ -8,7 +8,7 @@ int main()
     
     InitWindow(2*offset + cellSize*cellCount,2*offset+cellSize*cellCount, "Retro Snake");
     
-
+    
     Game game = Game();
 
     //game loop
@@ -17,7 +17,16 @@ int main()
         //1. Event
         BeginDrawing();
         
-        if (eventTriggered(0.2))
+        if (IsKeyPressed(KEY_W) && gameSpeed>=0.02)
+        {
+            gameSpeed -= 0.02;
+        }
+        if (IsKeyPressed(KEY_S) && gameSpeed<=0.6)
+        {
+            gameSpeed += 0.02;
+        }
+
+        if (eventTriggered(gameSpeed))
         {
             game.Update();
         }
@@ -50,6 +59,9 @@ int main()
         ClearBackground(background);
         DrawRectangleLinesEx(Rectangle{(float)offset-5,(float)offset-5,(float)cellSize*cellCount+10,(float)cellSize*cellCount+10},5,darkg);
         DrawText("Retro Snake",offset-5,20,40,darkg);
+        DrawText("Press W to Increase Speed",offset+465,20,20,darkg);
+        DrawText("Press S to Decrease Speed",offset+460,40,20,darkg);
+
         DrawText(TextFormat("Score: %i",game.score),offset-5,offset+cellSize*cellCount+10,40,darkg);
         game.Draw();
         EndDrawing();
