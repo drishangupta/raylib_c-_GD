@@ -7,7 +7,7 @@ int main()
 {
     
     InitWindow(2*offset + cellSize*cellCount,2*offset+cellSize*cellCount, "Retro Snake");
-    SetTargetFPS(60);
+    
 
     Game game = Game();
 
@@ -17,7 +17,7 @@ int main()
         //1. Event
         BeginDrawing();
         
-        if (eventTriggered(0.1))
+        if (eventTriggered(0.2))
         {
             game.Update();
         }
